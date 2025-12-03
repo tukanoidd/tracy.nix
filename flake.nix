@@ -4,6 +4,11 @@
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    tracy = {
+      url = "github:wolfpld/tracy?tag=v0.13.0";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {flake-parts, ...}:
@@ -32,12 +37,7 @@
             pname = "tracy";
             version = "0.13.0";
 
-            src = fetchFromGitHub {
-              owner = "wolfpld";
-              repo = "tracy";
-              rev = "v${version}";
-              hash = "sha256-voHql8ETnrUMef14LYduKI+0LpdnCFsvpt8B6M/ZNmc=";
-            };
+            src = inputs.tracy;
 
             patches = [
               ./cpm-no-hash.patch
@@ -65,6 +65,12 @@
               libxkbcommon
               wayland
               gtk3
+              openssl
+              nghttp2
+              libidn2
+              libssh2
+              perl
+              fp16
 
               tbb_2022
             ];
@@ -74,6 +80,7 @@
               "-DTRACY_STATIC=off"
               "-DCPM_SOURCE_CACHE=/build/source/cpm_source_cache"
               "-DGTK_FILESELECTION=ON"
+              "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
             ];
 
             env.NIX_CFLAGS_COMPILE = "-ltbb";
